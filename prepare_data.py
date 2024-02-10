@@ -98,6 +98,7 @@ economic_data.index = economic_data.index.strftime('%Y-%m-%d')
 
 # Combine data
 combined_data = etf_data.join(economic_data, how="inner")
+combined_data = combined_data.replace(0.0, 1e-10)
 
 # Convert the index to datetime
 combined_data.index = pd.to_datetime(combined_data.index)
