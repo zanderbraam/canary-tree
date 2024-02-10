@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Data folder
+data/
+
 # Distribution / packaging
 .Python
 build/
@@ -122,11 +125,14 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.ve
 env/
 venv/
 ENV/
+ve/
 env.bak/
 venv.bak/
+ve.bak/
 
 # Spyder project settings
 .spyderproject
@@ -157,4 +163,4 @@ cython_debug/
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+.idea/
