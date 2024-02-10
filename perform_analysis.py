@@ -27,7 +27,7 @@ X = data.drop("strategy", axis=1)
 y = data["strategy"]
 
 # Splitting the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=False)
 
 if os.path.exists("./data/best_parameters/best_hyperparameters.json"):
     # Load from JSON
@@ -63,7 +63,7 @@ else:
 
 
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=100)
+    study.optimize(objective, n_trials=150)
 
     # Get best parameters
     best_params = study.best_trial.params
@@ -77,8 +77,8 @@ else:
     model.fit(X_train, y_train)
 
 # Plot feature importance
-plot_importance(model, importance_type="gain", max_num_features=10, show_values=False)
-plt.show()
+plot_importance(model, importance_type="gain", max_num_features=20, show_values=False)
+# plt.show()
 
 # Calculate the probabilities of each class
 y_probs = model.predict_proba(X_test)[:, 1]
@@ -97,7 +97,7 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic')
 plt.legend(loc="lower right")
-plt.show()
+# plt.show()
 
 # Calculate precision-recall curve
 precision, recall, _ = precision_recall_curve(y_test, y_probs)
@@ -112,13 +112,13 @@ plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.title('Precision-Recall Curve')
 plt.legend(loc="best")
-plt.show()
+# plt.show()
 
 # Plot confusion matrix
 y_pred = model.predict(X_test)
 ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
 plt.title('Confusion Matrix')
-plt.show()
+# plt.show()
 
 train_sizes, train_scores, test_scores = learning_curve(model, X, y, cv=5, n_jobs=-1,
                                                         train_sizes=np.linspace(.1, 1.0, 5))
@@ -138,6 +138,6 @@ plt.title('Learning Curves')
 plt.xlabel('Training examples')
 plt.ylabel('Score')
 plt.legend(loc="best")
-plt.show()
+# plt.show()
 
-import pdb; pdb.set_trace()
+plt.show()
