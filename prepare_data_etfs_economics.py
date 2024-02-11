@@ -131,8 +131,18 @@ monthly_strategy_data = strategy_data.resample("BM").last()
 # Calculate monthly returns and then transform into binary variables (1 if the return is positive, 0 otherwise)
 monthly_returns = monthly_strategy_data.pct_change()
 binary_returns = (monthly_returns > 0).astype(int)
-binary_return = binary_returns.shift(-1)
+binary_returns = binary_returns.shift(-1)
 binary_returns = binary_returns.iloc[:-1]
 
-result.to_csv("./data/transformed/input_data.csv")
-binary_returns.to_csv("./data/transformed/target_data.csv")
+definitions = pd.read_csv("./data/raw/economic_indicator_definitions.csv")
+
+data = {}
+for series_id in economic_data.columns:
+    description = definitions.loc[definitions['series_id'] == int(series_id), 'description'].values[0]
+    data[series_id] = description
+
+data = pd.DataFrame.from_dict(data, orient='index', columns=['description'])
+data.to_csv("./data/transformed/economic_descriptions.csv")
+
+result.iloc[1:, :].to_csv("./data/transformed/input_data_etfs_economics.csv")
+binary_returns.iloc[1:, :].to_csv("./data/transformed/target_data_etfs_economics.csv")

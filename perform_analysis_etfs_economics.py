@@ -12,8 +12,8 @@ from sklearn.metrics import accuracy_score, roc_curve, auc, precision_recall_cur
     ConfusionMatrixDisplay
 
 # Get the data
-input_data = pd.read_csv("./data/transformed/input_data.csv")
-target_data = pd.read_csv("./data/transformed/target_data.csv")
+input_data = pd.read_csv("./data/transformed/input_data_etfs_economics.csv")
+target_data = pd.read_csv("./data/transformed/target_data_etfs_economics.csv")
 
 # Dropping the first unnamed column and merging datasets on the date column
 input_data = input_data.drop(columns=input_data.columns[0])
@@ -29,9 +29,9 @@ y = data["strategy"]
 # Splitting the dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=False)
 
-if os.path.exists("./data/best_parameters/best_hyperparameters.json"):
+if os.path.exists("./data/best_parameters/best_hyperparameters_etfs_economics.json"):
     # Load from JSON
-    with open("./data/best_parameters/best_hyperparameters.json", "r") as f:
+    with open("./data/best_parameters/best_hyperparameters_etfs_economics.json", "r") as f:
         loaded_params = json.load(f)
 
     model = XGBClassifier(**loaded_params)
@@ -54,7 +54,7 @@ else:
         }
 
         model = XGBClassifier(**param)
-        model.set_params(early_stopping_rounds=50)
+        model.set_params(early_stopping_rounds=60)
         model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
 
         preds = model.predict(X_test)
@@ -63,13 +63,13 @@ else:
 
 
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=150)
+    study.optimize(objective, n_trials=300)
 
     # Get best parameters
     best_params = study.best_trial.params
 
     # Save to JSON
-    with open("./data/best_parameters/best_hyperparameters.json", "w") as f:
+    with open("./data/best_parameters/best_hyperparameters_etfs_economics.json", "w") as f:
         json.dump(best_params, f)
 
     # Retrain model with best parameters
@@ -78,7 +78,7 @@ else:
 
 # Plot feature importance
 plot_importance(model, importance_type="gain", max_num_features=20, show_values=False)
-# plt.show()
+plt.show()
 
 # Calculate the probabilities of each class
 y_probs = model.predict_proba(X_test)[:, 1]
@@ -97,7 +97,7 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic')
 plt.legend(loc="lower right")
-# plt.show()
+plt.show()
 
 # Calculate precision-recall curve
 precision, recall, _ = precision_recall_curve(y_test, y_probs)
@@ -112,13 +112,13 @@ plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.title('Precision-Recall Curve')
 plt.legend(loc="best")
-# plt.show()
+plt.show()
 
 # Plot confusion matrix
 y_pred = model.predict(X_test)
 ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
 plt.title('Confusion Matrix')
-# plt.show()
+plt.show()
 
 train_sizes, train_scores, test_scores = learning_curve(model, X, y, cv=5, n_jobs=-1,
                                                         train_sizes=np.linspace(.1, 1.0, 5))
@@ -138,6 +138,6 @@ plt.title('Learning Curves')
 plt.xlabel('Training examples')
 plt.ylabel('Score')
 plt.legend(loc="best")
-# plt.show()
-
 plt.show()
+
+# plt.show()
